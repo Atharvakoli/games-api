@@ -54,9 +54,6 @@ describe('Functions tests', () => {
 });
 
 describe('API Endpoint tests', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
   it('GET /games should be able to return list of games', async () => {
     let res = await request(server).get('/games');
     expect(res.status).toBe(200);

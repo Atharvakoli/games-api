@@ -1,42 +1,41 @@
 name: CI Pipeline
 
 on:
-    push:
-        branches: [main]
-    pull_request:
-        branches: [main]
+  push:
+    branches: [main]
+  pull_requests:
+    branches: [main]
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  builds:
+    runs-on: ubuntu-latest
 
-        strategy:
-            matrix:
-                node-version: [22.x]
+    strategy:
+      matrix:
+        node-version: [22.x]
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+    steps:
+      - name: Check-out respository
+      - uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ matrix.node-version }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version}}
+      - name: Install dependencies
+        run: npm install
 
-            - name: Install dependencies
-              run: npm install
+      - name: Run tests
+        run: npm test
 
-            - name: Run tests
-              run: npm test
+      - name: Install Vercel CLI
+        run: npm install --global vercel@canary
 
-            - name: Install Vercel CLI
-              run: npm install --global vercel@canary
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{secrets.VERCEL_TOKEN}}
 
-            - name: Pull Vercel Environment Information
-              run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Projects Aritfacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN}}
 
-            - name: Build Project Artifacts
-              run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-
-            - name: Deploy Project Artifacts to Vercel
-              run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Project ArtiFacts to Vercel
+        run: vercel deploy --prebuilt --prod --token${{secrets.VERCEL_TOKEN}}
